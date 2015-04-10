@@ -12,7 +12,7 @@ public enum BoundsTest {
 public class Utils : MonoBehaviour {
 	
 	
-//============================ Bounds Functions ============================\
+	//============================ Bounds Functions ============================\
 	
 	// Creates bounds that encapsulate of the two Bounds passed in.
 	public static Bounds BoundsUnion( Bounds b0, Bounds b1 ) {
@@ -110,7 +110,7 @@ public class Utils : MonoBehaviour {
 		Vector3 off = Vector3.zero;
 		
 		switch (test) {			
-// The center test determines what off (offset) would have to be applied to lilB to move its center back inside bigB
+			// The center test determines what off (offset) would have to be applied to lilB to move its center back inside bigB
 		case BoundsTest.center:
 			// if the center is contained, return Vector3.zero
 			if ( bigB.Contains( pos ) ) {
@@ -134,7 +134,7 @@ public class Utils : MonoBehaviour {
 			}
 			return( off );
 			
-// The onScreen test determines what off would have to be applied to keep all of lilB inside bigB
+			// The onScreen test determines what off would have to be applied to keep all of lilB inside bigB
 		case BoundsTest.onScreen:
 			// find whether bigB contains all of lilB
 			if ( bigB.Contains( lilB.min ) && bigB.Contains( lilB.max ) ) {
@@ -158,7 +158,7 @@ public class Utils : MonoBehaviour {
 			}
 			return( off );
 			
-// The offScreen test determines what off would need to be applied to move any tiny part of lilB inside of bigB
+			// The offScreen test determines what off would need to be applied to move any tiny part of lilB inside of bigB
 		case BoundsTest.offScreen:
 			// find whether bigB contains any of lilB
 			bool cMin = bigB.Contains( lilB.min );
@@ -190,7 +190,7 @@ public class Utils : MonoBehaviour {
 	}
 	
 	
-//============================ Transform Functions ============================\
+	//============================ Transform Functions ============================\
 	
 	// This function will iteratively climb up the transform.parent tree
 	//   until it either finds a parent with a tag != "Untagged" or no parent
@@ -217,7 +217,7 @@ public class Utils : MonoBehaviour {
 	
 	
 	
-//============================ Materials Functions ============================
+	//============================ Materials Functions ============================
 	
 	// Returns a list of all Materials in this GameObject or its children
 	static public Material[] GetAllMaterials( GameObject go ) {
@@ -234,7 +234,7 @@ public class Utils : MonoBehaviour {
 	
 	
 	
-//============================ Linear Interpolation ============================
+	//============================ Linear Interpolation ============================
 	
 	// The standard Vector Lerp functions in Unity don't allow for extrapolation
 	//   (which is input u values <0 or >1), so we need to write our own functions
@@ -255,7 +255,7 @@ public class Utils : MonoBehaviour {
 	
 	
 	
-//============================ Bézier Curves ============================
+	//============================ Bézier Curves ============================
 	
 	// While most Bézier curves are 3 or 4 points, it is possible to have
 	//   any number of points using this recursive function
@@ -326,11 +326,35 @@ public class Utils : MonoBehaviour {
 	static public float Bezier( float u, params float[] vecs ) {
 		return( Bezier( u, new List<float>(vecs) ) );
 	}
-
-
+	
+	
+	// The same two functions for Quaternion
+	static public Quaternion Bezier( float u, List<Quaternion> vList ) {
+		// If there is only one element in vList, return it
+		if (vList.Count == 1) {
+			return( vList[0] );
+		}
+		// Otherwise, create vListR, which is all but the 0th element of vList
+		// e.g. if vList = [0,1,2,3,4] then vListR = [1,2,3,4]
+		List<Quaternion> vListR =  vList.GetRange(1, vList.Count-1);
+		// And create vListL, which is all but the last element of vList
+		// e.g. if vList = [0,1,2,3,4] then vListL = [0,1,2,3]
+		List<Quaternion> vListL = vList.GetRange(0, vList.Count-1);
+		// The result is the Slerp of these two shorter Lists
+		// It's possible that Quaternion.Slerp may clamp u to [0..1] :(
+		Quaternion res = Quaternion.Slerp( Bezier(u, vListL), Bezier(u, vListR), u );
+		return( res );
+	}
+	
+	// This version allows an Array or a series of floats as input
+	static public Quaternion Bezier( float u, params Quaternion[] vecs ) {
+		return( Bezier( u, new List<Quaternion>(vecs) ) );
+	}
+	
+	
 	
 	//============================ Trace & Logging Functions ============================
-
+	
 	static public void tr(params object[] objs) {
 		string s = objs[0].ToString();
 		for (int i=1; i<objs.Length; i++) {
@@ -341,7 +365,7 @@ public class Utils : MonoBehaviour {
 	
 	
 	//============================ Math Functions ============================
-
+	
 	static public float RoundToPlaces(float f, int places=2) {
 		float mult = Mathf.Pow(10,places);
 		f *= mult;
@@ -349,7 +373,7 @@ public class Utils : MonoBehaviour {
 		f /= mult;
 		return(f);
 	}
-
+	
 	static public string AddCommasToNumber(float f, int places=2) {
 		int n = Mathf.RoundToInt(f);
 		f -= n;
@@ -382,7 +406,7 @@ public class Utils : MonoBehaviour {
 		if (res == "") res = "0";
 		return( res );
 	}
-
+	
 	
 	
 	
